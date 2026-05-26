@@ -27,29 +27,23 @@ async def chat(request: Request):
 
     async def event_stream():
         if mode == "optimize" and previous_code:
+            yield {"event": "step", "data": json.dumps({"type": "generation", "message": "正在优化策略..."}, ensure_ascii=False)}
+            await asyncio.sleep(0.1)
             result = run_optimization_loop(previous_code, previous_metrics, message)
-            yield {
-                "event": "step",
-                "data": json.dumps({"type": "optimization", **result}, ensure_ascii=False)
-            }
+            yield {"event": "step", "data": json.dumps({"type": "optimization", **result}, ensure_ascii=False)}
             yield {"event": "done", "data": "{}"}
         else:
+            yield {"event": "step", "data": json.dumps({"type": "generation", "message": "正在分析你的策略..."}, ensure_ascii=False)}
+            await asyncio.sleep(0.1)
             result = run_agent_loop(message)
             for step in result["steps"]:
-                yield {
-                    "event": "step",
-                    "data": json.dumps(step, ensure_ascii=False)
-                }
+                yield {"event": "step", "data": json.dumps(step, ensure_ascii=False)}
                 await asyncio.sleep(0.3)
-
-            yield {
-                "event": "done",
-                "data": json.dumps({
+            yield {"event": "done", "data": json.dumps({
                     "final_code": result["final_code"],
                     "final_metrics": result["final_metrics"],
                     "optimization_suggestion": result["optimization_suggestion"]
-                }, ensure_ascii=False)
-            }
+                }, ensure_ascii=False)}
 
     return EventSourceResponse(event_stream())
 

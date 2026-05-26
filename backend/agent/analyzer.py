@@ -8,6 +8,7 @@ from knowledge.system_prompt import SYSTEM_PROMPT
 client = OpenAI(
     api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
     base_url="https://api.deepseek.com",
+    timeout=60.0,
 )
 
 
@@ -60,7 +61,7 @@ Generate the improved Python code. Output ONLY the code in a markdown block."""
 
     response = client.chat.completions.create(
         model="deepseek-chat",
-        max_tokens=2048,
+        max_tokens=1024,
         temperature=0.2,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
