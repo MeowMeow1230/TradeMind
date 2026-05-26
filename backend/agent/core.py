@@ -33,6 +33,7 @@ def run_agent_loop(user_message: str) -> dict:
         "type": "backtest",
         "metrics": metrics,
         "equity_curve": backtest_result["equity_curve"],
+        "benchmark_curve": backtest_result.get("benchmark_curve", []),
         "dates": backtest_result["dates"],
         "total_trades": backtest_result["total_trades"],
         "message": f"回测完成：收益 {metrics['total_return_pct']}%，夏普 {metrics['sharpe_ratio']}，最大回撤 {metrics['max_drawdown_pct']}%"
@@ -67,6 +68,7 @@ def run_optimization_loop(previous_code: str, metrics: dict, user_feedback: str)
         "code": optimized_code,
         "metrics": new_metrics,
         "equity_curve": backtest_result["equity_curve"],
+        "benchmark_curve": backtest_result.get("benchmark_curve", []),
         "dates": backtest_result["dates"],
         "total_trades": backtest_result["total_trades"],
         "improvement": improvement,
