@@ -1,11 +1,41 @@
-"""Mantle blockchain integration for logging strategy hashes on-chain."""
-
-import hashlib
+import os
 import json
-
+import hashlib
 from web3 import Web3
+from pathlib import Path
 
-MANTLE_SEPOLIA_RPC = "https://rpc.sepolia.mantle.xyz"
+MANTLE_TESTNET_RPC = "https://rpc.sepolia.mantle.xyz"
+CHAIN_ID = 5003
+
+_CONTRACT_DIR = Path(__file__).parent.parent.parent / "artifacts" / "contracts" / "AgentIdentity.sol"
+_ABI_PATH = _CONTRACT_DIR / "AgentIdentity.json"
+
+
+def _get_contract(w3: Web3, contract_address: str):
+    with open(_ABI_PATH) as f:
+        abi = json.load(f)["abi"]
+    return w3.eth.contract(address=contract_address, abi=abi)
+
+
+def deploy_contract(private_key: str) -> str:
+    """Deploy AgentIdentity contract and return address."""
+    w3 = Web3(Web3.HTTPProvider(MANTLE_TESTNET_RPC))
+    account = w3.eth.account.from_key(private_key)
+
+    with open(_ABI_PATH) as f:
+        artifact = json.load(f)
+
+    contract = w3.eth.contract(abi=artifact["abi"], bytecode=artifact["bytecode"])
+    tx = contract.constructor().build_transaction({
+        "from": account.address,
+        "nonce": w3.eth.get_transaction_count(account.address),
+        "chainId": CHAIN_ID,
+    })
+
+    signed = account.sign_transaction(tx)
+    tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    return receipt.contractAddress
 
 
 def log_strategy_to_chain(
@@ -14,44 +44,24 @@ def log_strategy_to_chain(
     code: str,
     sharpe_ratio: float,
 ) -> str:
-    """Log a strategy hash and sharpe ratio to the Mantle Sepolia chain.
-
-    Returns the transaction hash.
-    """
-    w3 = Web3(Web3.HTTPProvider(MANTLE_SEPOLIA_RPC))
-
-    strategy_hash = hashlib.sha256(code.encode()).hexdigest()
-
-    # Minimal ABI for a simple logging contract
-    abi = json.dumps([
-        {
-            "name": "logStrategy",
-            "type": "function",
-            "inputs": [
-                {"name": "hash", "type": "bytes32"},
-                {"name": "sharpe", "type": "uint256"},
-            ],
-            "outputs": [],
-            "stateMutability": "nonpayable",
-        }
-    ])
-
-    contract = w3.eth.contract(address=Web3.to_checksum_address(contract_address), abi=abi)
+    """Hash strategy code and log to Mantle. Returns transaction hash."""
+    w3 = Web3(Web3.HTTPProvider(MANTLE_TESTNET_RPC))
     account = w3.eth.account.from_key(private_key)
+    contract = _get_contract(w3, contract_address)
 
-    # Scale sharpe to uint256 (multiply by 1e18 for fixed-point)
-    sharpe_scaled = int(sharpe_ratio * 1e18)
+    strategy_hash = "0x" + hashlib.sha256(code.encode()).hexdigest()
+    performance = int(sharpe_ratio * 1_000_000)
 
     tx = contract.functions.logStrategy(
-        Web3.to_bytes(hexstr=strategy_hash),
-        sharpe_scaled,
+        bytes.fromhex(strategy_hash[2:]),
+        performance
     ).build_transaction({
         "from": account.address,
         "nonce": w3.eth.get_transaction_count(account.address),
-        "gas": 200_000,
-        "gasPrice": w3.eth.gas_price,
+        "chainId": CHAIN_ID,
     })
 
     signed = account.sign_transaction(tx)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
-    return tx_hash.hex()
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    return receipt.transactionHash.hex()
