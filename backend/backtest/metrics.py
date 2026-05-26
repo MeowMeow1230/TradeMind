@@ -4,13 +4,16 @@ import numpy as np
 def compute_metrics(equity_curve: np.ndarray, risk_free_rate: float = 0.02) -> dict:
     """Compute standard backtest metrics from equity curve."""
     returns = np.diff(equity_curve) / equity_curve[:-1]
-    if len(returns) == 0:
+    total_return = (equity_curve[-1] / equity_curve[0] - 1) * 100
+
+    # No trades: equity never changed
+    if len(returns) == 0 or abs(total_return) < 0.001:
         return {
-            "total_return_pct": 0,
-            "sharpe_ratio": 0,
-            "max_drawdown_pct": 0,
-            "win_rate_pct": 0,
-            "profit_factor": 0,
+            "total_return_pct": 0.0,
+            "sharpe_ratio": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
         }
 
     total_return = (equity_curve[-1] / equity_curve[0] - 1) * 100
