@@ -12,6 +12,7 @@ export interface AgentStep {
   equity_curve?: number[];
   benchmark_curve?: number[];
   dates?: string[];
+  symbol?: string;
   total_trades?: number;
   improvement?: string;
 }

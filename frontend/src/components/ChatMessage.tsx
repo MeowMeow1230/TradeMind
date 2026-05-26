@@ -39,6 +39,7 @@ export default function ChatMessage({ step, isUser }: { step: AgentStep | { type
       <div>
         <div className="text-xs text-agent-accent mb-1 ml-1">AI Trading Partner</div>
         <div className="bg-agent-card border border-agent-border px-4 py-3 rounded-lg max-w-[85%]">
+          {agentStep.symbol && <div className="text-xs text-agent-accent font-bold mb-1">{agentStep.symbol}</div>}
           <p className="text-sm text-gray-300 whitespace-pre-wrap">{agentStep.message}</p>
           {agentStep.metrics && <MetricsDisplay metrics={agentStep.metrics} />}
           {agentStep.code && (

@@ -35,6 +35,7 @@ export default function Home() {
   const [equityDates, setEquityDates] = useState<string[]>([]);
   const [strategyName, setStrategyName] = useState("");
   const [pipelineStep, setPipelineStep] = useState(0);
+  const [multiResults, setMultiResults] = useState<AgentStep[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
@@ -61,6 +62,7 @@ export default function Home() {
         if (step.equity_curve) setEquityCurve(step.equity_curve);
         if (step.benchmark_curve) setBenchmarkCurve(step.benchmark_curve);
         if (step.dates) setEquityDates(step.dates);
+        if (step.type === "backtest") setMultiResults((prev) => [...prev, step]);
       },
       (done) => {
         setLoading(false);
@@ -86,6 +88,7 @@ export default function Home() {
     setEquityCurve([]);
     setBenchmarkCurve([]);
     setEquityDates([]);
+    setMultiResults([]);
     setStrategyName("");
     setPipelineStep(0);
   };
@@ -168,6 +171,31 @@ export default function Home() {
         {strategyName && <div className="text-xs text-gray-500">Strategy: <span className="text-agent-accent">{strategyName}</span></div>}
         {finalCode && <CodeViewer code={finalCode} />}
         {finalMetrics && <BacktestCard metrics={finalMetrics} equityCurve={equityCurve} benchmarkCurve={benchmarkCurve} dates={equityDates} />}
+        {multiResults.length > 1 && (
+          <div className="p-3 bg-agent-card border border-agent-border rounded">
+            <h3 className="text-sm font-bold text-agent-accent mb-2">Multi-Symbol Comparison</h3>
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-gray-500 border-b border-agent-border">
+                  <th className="text-left py-1">Symbol</th>
+                  <th className="text-right py-1">Return</th>
+                  <th className="text-right py-1">Sharpe</th>
+                  <th className="text-right py-1">Trades</th>
+                </tr>
+              </thead>
+              <tbody>
+                {multiResults.map((r) => (
+                  <tr key={r.symbol} className="border-b border-agent-border">
+                    <td className="py-1 text-agent-accent">{r.symbol}</td>
+                    <td className={`py-1 text-right ${(r.metrics?.total_return_pct ?? 0) >= 0 ? "text-green-400" : "text-red-400"}`}>{r.metrics?.total_return_pct ?? 0}%</td>
+                    <td className="py-1 text-right">{r.metrics?.sharpe_ratio?.toFixed(2) ?? "0.00"}</td>
+                    <td className="py-1 text-right">{r.total_trades ?? 0}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {suggestion && (
           <div className="p-3 bg-agent-bg border border-agent-accent rounded">
             <h3 className="text-sm font-bold text-agent-accent mb-2">AI Suggestion</h3>

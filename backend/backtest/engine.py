@@ -46,9 +46,24 @@ def run_backtest(code: str, symbol: str = "BTC/USDT", timeframe: str = "1h", day
     benchmark = (close / close[0]) * initial_capital
 
     return {
+        "symbol": symbol,
         "metrics": metrics,
         "equity_curve": equity_list[:: max(1, len(equity_list) // 200)],
         "benchmark_curve": benchmark[:: max(1, len(benchmark) // 200)].tolist(),
         "dates": [str(d) for d in df.index[:: max(1, len(df) // 200)]],
         "total_trades": int(np.sum(np.abs(np.diff(signal)) > 0) // 2),
     }
+
+
+def run_backtest_multi(code: str, symbols: list[str] | None = None, timeframe: str = "15m", days: int = 180) -> list[dict]:
+    """Run the same strategy on multiple symbols. Returns list of results."""
+    if symbols is None:
+        symbols = ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
+    results = []
+    for sym in symbols:
+        try:
+            r = run_backtest(code, sym, timeframe, days)
+            results.append(r)
+        except Exception as e:
+            results.append({"symbol": sym, "error": str(e)})
+    return results
