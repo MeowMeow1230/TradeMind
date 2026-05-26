@@ -10,6 +10,7 @@ export interface AgentStep {
     profit_factor: number;
   };
   equity_curve?: number[];
+  benchmark_curve?: number[];
   dates?: string[];
   total_trades?: number;
   improvement?: string;

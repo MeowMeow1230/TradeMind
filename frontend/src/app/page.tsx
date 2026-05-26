@@ -24,6 +24,7 @@ export default function Home() {
   const [currentCode, setCurrentCode] = useState("");
   const [currentMetrics, setCurrentMetrics] = useState<Record<string, number>>({});
   const [equityCurve, setEquityCurve] = useState<number[]>([]);
+  const [benchmarkCurve, setBenchmarkCurve] = useState<number[]>([]);
   const [equityDates, setEquityDates] = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -46,6 +47,7 @@ export default function Home() {
         if (step.code) setCurrentCode(step.code);
         if (step.metrics) setCurrentMetrics(step.metrics as unknown as Record<string, number>);
         if (step.equity_curve) setEquityCurve(step.equity_curve);
+        if (step.benchmark_curve) setBenchmarkCurve(step.benchmark_curve);
         if (step.dates) setEquityDates(step.dates);
       },
       (done) => {
@@ -78,13 +80,13 @@ export default function Home() {
         <ChatInput onSend={handleSend} disabled={loading} />
       </div>
 
-      <aside className="w-96 border-l border-agent-border p-4 overflow-y-auto hidden lg:block">
+      <aside className="w-96 border-l border-agent-border p-4 overflow-y-auto hidden lg:block space-y-4">
         {finalCode && <CodeViewer code={finalCode} />}
-        {finalMetrics && <BacktestCard metrics={finalMetrics} equityCurve={equityCurve} dates={equityDates} />}
+        {finalMetrics && <BacktestCard metrics={finalMetrics} equityCurve={equityCurve} benchmarkCurve={benchmarkCurve} dates={equityDates} />}
         {suggestion && (
-          <div className="mt-4 p-3 bg-agent-card border border-agent-warn rounded">
-            <h3 className="text-sm font-bold text-agent-warn mb-1">AI Suggestion</h3>
-            <p className="text-xs text-gray-300">{suggestion}</p>
+          <div className="p-3 bg-agent-bg border border-agent-accent rounded">
+            <h3 className="text-sm font-bold text-agent-accent mb-2">AI Suggestion</h3>
+            <p className="text-xs text-gray-300 leading-relaxed">{suggestion}</p>
           </div>
         )}
         {finalCode && <ExportPanel code={finalCode} metrics={finalMetrics} />}

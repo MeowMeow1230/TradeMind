@@ -42,9 +42,13 @@ def run_backtest(code: str, symbol: str = "BTC/USDT", timeframe: str = "1h", day
     metrics = compute_metrics(equity)
     equity_list = equity.tolist()
 
+    # Benchmark: buy and hold
+    benchmark = (close / close[0]) * initial_capital
+
     return {
         "metrics": metrics,
         "equity_curve": equity_list[:: max(1, len(equity_list) // 200)],
+        "benchmark_curve": benchmark[:: max(1, len(benchmark) // 200)].tolist(),
         "dates": [str(d) for d in df.index[:: max(1, len(df) // 200)]],
         "total_trades": int(np.sum(np.abs(np.diff(signal)) > 0) // 2),
     }

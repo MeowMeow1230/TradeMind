@@ -3,9 +3,10 @@
 import { useEffect, useRef } from "react";
 import { AgentStep } from "@/lib/api";
 
-export default function BacktestCard({ metrics, equityCurve, dates }: {
+export default function BacktestCard({ metrics, equityCurve, benchmarkCurve, dates }: {
   metrics: NonNullable<AgentStep["metrics"]>;
   equityCurve?: number[];
+  benchmarkCurve?: number[];
   dates?: string[];
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -13,27 +14,39 @@ export default function BacktestCard({ metrics, equityCurve, dates }: {
   useEffect(() => {
     if (!equityCurve || !dates || !chartRef.current) return;
     import("plotly.js-dist-min").then((Plotly) => {
-      const trace = {
-        x: dates,
-        y: equityCurve,
-        type: "scatter" as const,
-        mode: "lines" as const,
-        fill: "tozeroy" as const,
-        line: { color: "#00d4aa", width: 2 },
-        fillcolor: "rgba(0,212,170,0.1)",
-      };
+      const traces = [
+        {
+          x: dates,
+          y: equityCurve,
+          type: "scatter" as const,
+          mode: "lines" as const,
+          name: "Strategy",
+          line: { color: "#00d4aa", width: 2 },
+        },
+      ];
+      if (benchmarkCurve) {
+        traces.push({
+          x: dates,
+          y: benchmarkCurve,
+          type: "scatter" as const,
+          mode: "lines" as const,
+          name: "Buy & Hold",
+          line: { color: "#8b949e", width: 1, dash: "dot" },
+        });
+      }
       const layout = {
         paper_bgcolor: "transparent",
         plot_bgcolor: "transparent",
         font: { color: "#8b949e", size: 10 },
-        margin: { l: 40, r: 10, t: 10, b: 30 },
+        margin: { l: 45, r: 10, t: 10, b: 30 },
         xaxis: { showgrid: false },
         yaxis: { showgrid: true, gridcolor: "#30363d", tickprefix: "$" },
-        height: 200,
+        height: 300,
+        legend: { x: 0, y: 1.1, orientation: "h" as const, font: { size: 10 } },
       };
-      Plotly.newPlot(chartRef.current, [trace], layout, { displayModeBar: false, responsive: true });
+      Plotly.newPlot(chartRef.current, traces, layout, { displayModeBar: false, responsive: true });
     });
-  }, [equityCurve, dates]);
+  }, [equityCurve, benchmarkCurve, dates]);
 
   return (
     <div className="mt-4 p-3 bg-agent-card border border-agent-border rounded">

@@ -24,7 +24,10 @@ export default function ChatMessage({ step, isUser }: { step: AgentStep | { type
   if ("type" in step && step.type === "user") {
     return (
       <div className="flex justify-end mb-4">
-        <div className="bg-agent-accent text-black px-4 py-2 rounded-lg max-w-[80%]">{step.message}</div>
+        <div>
+          <div className="text-xs text-gray-500 mb-1 text-right mr-1">You</div>
+          <div className="bg-agent-accent text-black px-4 py-2 rounded-lg max-w-[80%] ml-auto">{step.message}</div>
+        </div>
       </div>
     );
   }
@@ -33,15 +36,18 @@ export default function ChatMessage({ step, isUser }: { step: AgentStep | { type
 
   return (
     <div className="flex justify-start mb-4">
-      <div className="bg-agent-card border border-agent-border px-4 py-3 rounded-lg max-w-[85%]">
-        <p className="text-sm text-gray-300 whitespace-pre-wrap">{agentStep.message}</p>
-        {agentStep.metrics && <MetricsDisplay metrics={agentStep.metrics} />}
-        {agentStep.code && (
-          <details className="mt-2">
-            <summary className="text-xs text-agent-accent cursor-pointer">View Code</summary>
-            <pre className="text-xs mt-2 p-2 bg-agent-bg rounded overflow-x-auto max-h-48">{agentStep.code}</pre>
-          </details>
-        )}
+      <div>
+        <div className="text-xs text-agent-accent mb-1 ml-1">AI Trading Partner</div>
+        <div className="bg-agent-card border border-agent-border px-4 py-3 rounded-lg max-w-[85%]">
+          <p className="text-sm text-gray-300 whitespace-pre-wrap">{agentStep.message}</p>
+          {agentStep.metrics && <MetricsDisplay metrics={agentStep.metrics} />}
+          {agentStep.code && (
+            <details className="mt-2">
+              <summary className="text-xs text-agent-accent cursor-pointer hover:underline">View Generated Code</summary>
+              <pre className="text-xs mt-2 p-2 bg-agent-bg rounded overflow-x-auto max-h-48">{agentStep.code}</pre>
+            </details>
+          )}
+        </div>
       </div>
     </div>
   );
