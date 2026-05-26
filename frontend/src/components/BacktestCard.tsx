@@ -31,7 +31,7 @@ export default function BacktestCard({ metrics, equityCurve, benchmarkCurve, dat
           type: "scatter" as const,
           mode: "lines" as const,
           name: "Buy & Hold",
-          line: { color: "#8b949e", width: 1, dash: "dot" },
+          line: { color: "#8b949e", width: 1 },
         });
       }
       const layout = {
