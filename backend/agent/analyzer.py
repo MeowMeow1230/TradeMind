@@ -1,8 +1,15 @@
-from anthropic import Anthropic
-from knowledge.system_prompt import SYSTEM_PROMPT
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+from openai import OpenAI
+from knowledge.system_prompt import SYSTEM_PROMPT
+
+client = OpenAI(
+    api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
+    base_url="https://api.deepseek.com",
+)
+
 
 def analyze_results(metrics: dict, previous_code: str) -> str:
     """Analyze backtest results and suggest improvements."""
@@ -21,15 +28,18 @@ The strategy code was:
 
 Analyze these results. Identify the weakest aspect and suggest ONE specific improvement. Explain in plain language why this change should help. Be concise (3-4 sentences max)."""
 
-    response = client.messages.create(
-        model="claude-opus-4-7",
+    response = client.chat.completions.create(
+        model="deepseek-chat",
         max_tokens=512,
         temperature=0.3,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
     )
 
-    return response.content[0].text
+    return response.choices[0].message.content
+
 
 def suggest_optimization(metrics: dict, previous_code: str, optimization_request: str) -> str:
     """Generate an optimized version of the strategy."""
@@ -48,13 +58,15 @@ User's optimization request: "{optimization_request}"
 
 Generate the improved Python code. Output ONLY the code in a markdown block."""
 
-    response = client.messages.create(
-        model="claude-opus-4-7",
+    response = client.chat.completions.create(
+        model="deepseek-chat",
         max_tokens=2048,
         temperature=0.2,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
     )
 
     from .parser import extract_code_block
-    return extract_code_block(response.content[0].text)
+    return extract_code_block(response.choices[0].message.content)
