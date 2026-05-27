@@ -1,4 +1,7 @@
+import { useT } from "@/lib/i18n";
+
 export default function Logo() {
+  const { t } = useT();
   const lines = [
     " _____ ____      _    ____  _____ __  __ ___ _   _ ____  ",
     "|_   _|  _ \\    / \\  |  _ \\| ____|  \\/  |_ _| \\ | |  _ \\ ",
@@ -14,9 +17,9 @@ export default function Logo() {
         {lines.join("\n")}
       </pre>
       <p className="text-amber text-[12px] uppercase tracking-[0.3em] font-bold mb-1 mt-1">TradeMind</p>
-      <p className="text-terminal-muted text-[10px]">AI Strategy Workstation v2.0</p>
-      <p className="text-terminal-muted text-[10px] mt-1">Enter strategy → AI generates → Backtest → Deep Analysis</p>
-      <p className="text-terminal-muted text-[10px]">Walk-Forward • Monte Carlo • Parameter Stability</p>
+      <p className="text-terminal-muted text-[10px]">{t("empty.subtitle")}</p>
+      <p className="text-terminal-muted text-[10px] mt-1">{t("empty.desc")}</p>
+      <p className="text-terminal-muted text-[10px]">{t("empty.features")}</p>
     </div>
   );
 }

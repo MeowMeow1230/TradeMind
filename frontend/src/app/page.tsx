@@ -14,13 +14,7 @@ import MonteCarloCard from "@/components/MonteCarloCard";
 import ParamHeatmapCard from "@/components/ParamHeatmapCard";
 import ExportPanel from "@/components/ExportPanel";
 import { streamChat, AgentStep, AgentDone, WalkForwardResult, MonteCarloResult, ParamHeatmapResult } from "@/lib/api";
-
-const PRESETS = [
-  { label: "SMA CROSS", prompt: "Buy BTC when 10-period SMA crosses above 30-period SMA. Close when it crosses below. Stop loss 5% below entry. Take profit 10% above entry." },
-  { label: "RSI REV", prompt: "Buy BTC when RSI(14) below 30 and close above 20-period SMA. Close when RSI above 70. Stop loss 5% below entry." },
-  { label: "MACD", prompt: "Buy BTC when MACD line crosses above signal line and close above 50-period EMA. Close when MACD crosses below signal. Stop loss 3% below entry." },
-  { label: "BB SQUEEZE", prompt: "Buy BTC when close touches lower Bollinger Band (20,2) and RSI below 35. Close when close hits middle band. Stop loss 3% below entry." },
-];
+import { LanguageProvider, useT } from "@/lib/i18n";
 
 interface Message {
   id: string;
@@ -30,6 +24,22 @@ interface Message {
 }
 
 export default function Home() {
+  return (
+    <LanguageProvider>
+      <TradeMindApp />
+    </LanguageProvider>
+  );
+}
+
+function TradeMindApp() {
+  const { t, toggleLang, lang } = useT();
+
+  const PRESETS = [
+    { label: "SMA CROSS", prompt: "Buy BTC when 10-period SMA crosses above 30-period SMA. Close when it crosses below. Stop loss 5% below entry. Take profit 10% above entry." },
+    { label: "RSI REV", prompt: "Buy BTC when RSI(14) below 30 and close above 20-period SMA. Close when RSI above 70. Stop loss 5% below entry." },
+    { label: "MACD", prompt: "Buy BTC when MACD line crosses above signal line and close above 50-period EMA. Close when MACD crosses below signal. Stop loss 3% below entry." },
+    { label: "BB SQUEEZE", prompt: "Buy BTC when close touches lower Bollinger Band (20,2) and RSI below 35. Close when close hits middle band. Stop loss 3% below entry." },
+  ];
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [finalCode, setFinalCode] = useState("");
@@ -142,10 +152,11 @@ export default function Home() {
         {/* Header */}
         <header className="terminal-header flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-xs font-black tracking-[0.2em]">TRADEMIND — AI STRATEGY WORKSTATION</span>
-            <span className="text-[10px] text-terminal-muted">NLP &rarr; CODE &rarr; BACKTEST &rarr; ANALYZE</span>
+            <span className="text-xs font-black tracking-[0.2em]">{t("header.title")}</span>
+            <span className="text-[10px] text-terminal-muted">{t("header.flow")}</span>
           </div>
           <div className="flex items-center gap-4 text-[10px]">
+            <button onClick={toggleLang} className="text-terminal-muted hover:text-amber uppercase tracking-wider font-bold">{lang === "zh" ? "EN" : "中"}</button>
             {elapsed && (
               <div className="flex items-center gap-3">
                 {["PARSE", "GEN", "TEST", "ANALYZE"].map((s, i) => (
@@ -156,7 +167,7 @@ export default function Home() {
               </div>
             )}
             {complete && (
-              <button onClick={handleReset} className="text-terminal-muted hover:text-amber text-[10px] uppercase tracking-wider">[ NEW ]</button>
+              <button onClick={handleReset} className="text-terminal-muted hover:text-amber text-[10px] uppercase tracking-wider">{t("header.new")}</button>
             )}
           </div>
         </header>
@@ -164,7 +175,7 @@ export default function Home() {
         {/* Presets */}
         {!complete && pipelineStep === 0 && (
           <div className="terminal-panel px-3 py-2 border-b border-terminal-border flex items-center gap-2">
-            <span className="text-[10px] text-terminal-muted uppercase tracking-wider mr-1">Load:</span>
+            <span className="text-[10px] text-terminal-muted uppercase tracking-wider mr-1">{t("preset.load")}</span>
             {PRESETS.map((p) => (
               <button key={p.label} onClick={() => handlePreset(p.label, p.prompt)} disabled={loading}
                 className="text-[10px] px-2.5 py-1 border border-terminal-border text-terminal-muted hover:text-amber hover:border-amber disabled:opacity-20 uppercase tracking-wider font-bold">
@@ -189,7 +200,7 @@ export default function Home() {
           ))}
           {loading && (
             <div className="flex items-center gap-2 text-amber text-[10px] pl-2 py-1 font-bold uppercase tracking-wider">
-              <span className="inline-block w-1.5 h-1.5 bg-amber"/> {pipelineStep === 1 ? "Generating Code..." : pipelineStep === 2 ? "Running Backtest..." : pipelineStep === 3 ? "Analyzing..." : "Processing..."}
+              <span className="inline-block w-1.5 h-1.5 bg-amber"/> {pipelineStep === 1 ? t("loading.gen") : pipelineStep === 2 ? t("loading.test") : pipelineStep === 3 ? t("loading.analyze") : t("loading.process")}
             </div>
           )}
           <div ref={bottomRef} />
@@ -214,7 +225,7 @@ export default function Home() {
 
         {/* Status bar */}
         <div className="terminal-status flex items-center justify-between">
-          <span>{strategyName ? `STRATEGY: ${strategyName.toUpperCase()}` : "READY"}</span>
+          <span>{strategyName ? `${t("status.strategy")}${strategyName.toUpperCase()}` : t("status.ready")}</span>
           <span>{complete ? `RETURN ${finalMetrics?.total_return_pct ?? 0}% | SHARPE ${finalMetrics?.sharpe_ratio ?? 0}` : ""}</span>
           <span suppressHydrationWarning>{new Date().toLocaleTimeString()}</span>
         </div>
@@ -223,7 +234,7 @@ export default function Home() {
       {/* Right Panel — Results */}
       {complete && (
         <aside className="w-[420px] shrink-0 overflow-y-auto" style={{background: "#0a0a0a"}}>
-          <div className="terminal-header">RESULTS</div>
+          <div className="terminal-header">{t("sidebar.results")}</div>
           <div className="p-3 space-y-2">
             {finalCode && <CodeViewer code={finalCode} />}
             {finalMetrics && <BacktestCard metrics={finalMetrics} equityCurve={equityCurve} benchmarkCurve={benchmarkCurve} dates={equityDates} />}

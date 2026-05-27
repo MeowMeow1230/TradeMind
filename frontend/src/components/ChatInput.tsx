@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/lib/i18n";
 
 export default function ChatInput({ onSend, disabled }: { onSend: (msg: string, settings?: { capital: number; riskPct: number; symbols?: string[]; sizingConfirmed?: boolean }) => void; disabled: boolean }) {
+  const { t } = useT();
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -20,7 +22,7 @@ export default function ChatInput({ onSend, disabled }: { onSend: (msg: string, 
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter strategy description..."
+          placeholder={t("input.placeholder")}
           className="flex-1 bg-transparent border-0 px-0 py-2.5 text-xs text-terminal-bright placeholder:text-terminal-muted focus:outline-none font-mono"
           disabled={disabled}
         />
@@ -29,7 +31,7 @@ export default function ChatInput({ onSend, disabled }: { onSend: (msg: string, 
           disabled={disabled || !input.trim()}
           className="terminal-btn-primary px-6 py-2.5 text-xs font-bold disabled:opacity-30 shrink-0"
         >
-          EXECUTE
+          {t("input.execute")}
         </button>
       </div>
     </form>
