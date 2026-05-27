@@ -7,7 +7,7 @@ from analysis.monte_carlo import run_monte_carlo
 from analysis.parameter_heatmap import run_parameter_heatmap
 
 
-def run_agent_loop(user_message: str, capital: float = 10000.0, risk_pct: float = 2.0, symbols: list[str] | None = None) -> dict:
+def run_agent_loop(user_message: str, capital: float = 10000.0, risk_pct: float = 2.0, symbols: list[str] | None = None, lang: str = "zh") -> dict:
     """Execute the full agent loop: generate -> backtest (multi-symbol) -> analyze."""
     result = {
         "steps": [],
@@ -69,6 +69,7 @@ def run_agent_loop(user_message: str, capital: float = 10000.0, risk_pct: float 
             code=code,
             equity_curve=primary.get("equity_curve"),
             dates=primary.get("dates"),
+            lang=lang,
         )
         result["steps"].append({"type": "analysis", "message": analysis})
         result["optimization_suggestion"] = analysis

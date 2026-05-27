@@ -64,20 +64,21 @@ def _classify_intent(msg: str) -> str:
     return "discuss"
 
 
-def _discuss_results(code: str, metrics: dict, question: str) -> str:
+def _discuss_results(code: str, metrics: dict, question: str, lang: str = "zh") -> str:
     """Analyze current results in response to a discussion question."""
     client = OpenAI(
         api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
         base_url="https://api.deepseek.com",
         timeout=30.0,
     )
+    lang_instruction = "Write in Traditional Chinese." if lang == "zh" else "Write in English."
     prompt = f"""The user has a question about their trading strategy's backtest results.
 
 Current metrics: Return {metrics.get('total_return_pct', '?')}%, Sharpe {metrics.get('sharpe_ratio', '?')}, Win Rate {metrics.get('win_rate_pct', '?')}%, Max DD {metrics.get('max_drawdown_pct', '?')}%
 
 Their question: "{question}"
 
-Respond conversationally. If they're asking for improvement directions, give 1-2 specific, actionable suggestions with reasoning. Keep it under 200 words. Write in Traditional Chinese."""
+Respond conversationally. If they're asking for improvement directions, give 1-2 specific, actionable suggestions with reasoning. Keep it under 200 words. {lang_instruction}"""
 
     response = client.chat.completions.create(
         model="deepseek-chat",
@@ -108,14 +109,14 @@ async def chat(request: Request):
     risk_pct = float(body.get("risk_pct", 2))
     sizing_confirmed = body.get("sizing_confirmed", False)
     symbols = body.get("symbols", ["BTC/USDT", "ETH/USDT", "SOL/USDT"])
+    lang = body.get("lang", "zh")
 
     async def event_stream():
         if mode == "optimize" and previous_code:
             # Check intent: is user asking a question or requesting a code change?
             intent = _classify_intent(message)
             if intent == "discuss":
-                # Just chat — analyze current results, no code re-run
-                analysis = _discuss_results(previous_code, previous_metrics, message)
+                analysis = _discuss_results(previous_code, previous_metrics, message, lang)
                 yield {"event": "step", "data": json.dumps({"type": "analysis", "message": analysis}, ensure_ascii=False)}
                 yield {"event": "done", "data": json.dumps({
                     "final_code": previous_code,
@@ -180,7 +181,7 @@ async def chat(request: Request):
             # Phase 2: Generate strategy
             yield {"event": "step", "data": json.dumps({"type": "generation", "message": "Analyzing your strategy..."}, ensure_ascii=False)}
             await asyncio.sleep(0.1)
-            result = run_agent_loop(message, capital=capital, risk_pct=risk_pct, symbols=symbols)
+            result = run_agent_loop(message, capital=capital, risk_pct=risk_pct, symbols=symbols, lang=lang)
             for step in result["steps"]:
                 yield {"event": "step", "data": json.dumps(step, ensure_ascii=False)}
                 await asyncio.sleep(0.3)

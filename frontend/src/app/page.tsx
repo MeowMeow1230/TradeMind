@@ -120,14 +120,14 @@ function TradeMindApp() {
         setLoading(false);
         addMessage({ id: Date.now().toString(), type: "agent", content: `ERROR: ${err.message}` });
       },
-      settings,
+      { ...(settings || {}), lang },
     );
   };
 
   const handleSizingConfirm = (capital: number, riskPct: number, symbols: string[]) => {
     setSizingNeeded(false);
     setSizingPresets(null);
-    handleSend(lastUserMessage.current, { capital, riskPct, symbols, sizingConfirmed: true });
+    handleSend(lastUserMessage.current, { capital, riskPct, symbols, sizingConfirmed: true, lang });
   };
 
   const handleReset = () => {

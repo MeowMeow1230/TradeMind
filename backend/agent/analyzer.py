@@ -12,7 +12,7 @@ client = OpenAI(
 )
 
 
-def analyze_results(metrics: dict, code: str, equity_curve: list[float] | None = None, dates: list[str] | None = None) -> str:
+def analyze_results(metrics: dict, code: str, equity_curve: list[float] | None = None, dates: list[str] | None = None, lang: str = "zh") -> str:
     """Deep quantitative analysis of backtest results."""
 
     # Pre-compute drawdown period info for the prompt
@@ -64,7 +64,7 @@ Peak equity before drawdown: {current_peak:.2f}
 
 Deliver a structured analysis following the Deep Analysis framework (Phase 3) from your system prompt. Cover: Quick Diagnosis, Weakest Metric, Overfitting Assessment, Parameter Stability, Drawdown Analysis, Capital Management, and One Concrete Improvement.
 
-Be honest. If this strategy is bad, say so clearly. Write in Traditional Chinese."""
+Be honest. If this strategy is bad, say so clearly. Write in { 'Traditional Chinese' if lang == 'zh' else 'English' }."""
 
     response = client.chat.completions.create(
         model="deepseek-chat",

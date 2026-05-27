@@ -103,7 +103,7 @@ export function streamChat(
   onStep: (step: AgentStep) => void,
   onDone: (done: AgentDone) => void,
   onError: (err: Error) => void,
-  settings?: { capital: number; riskPct: number; symbols?: string[]; sizingConfirmed?: boolean },
+  settings?: { capital: number; riskPct: number; symbols?: string[]; sizingConfirmed?: boolean; lang?: string },
 ): AbortController {
   const controller = new AbortController();
 
@@ -119,6 +119,7 @@ export function streamChat(
       risk_pct: settings?.riskPct ?? 2,
       symbols: settings?.symbols ?? ["BTC/USDT", "ETH/USDT", "SOL/USDT"],
       sizing_confirmed: settings?.sizingConfirmed ?? false,
+      lang: settings?.lang ?? "zh",
     }),
     signal: controller.signal,
   })
