@@ -4,10 +4,11 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function CodeViewer({ code }: { code: string }) {
   return (
-    <div className="mt-4">
-      <h3 className="text-sm font-bold text-agent-accent mb-2">Strategy Code</h3>
-      <div className="max-h-64 overflow-y-auto rounded border border-agent-border">
-        <SyntaxHighlighter language="python" style={oneDark} customStyle={{ fontSize: "11px", margin: 0 }}>
+    <div className="terminal-panel p-3">
+      <div className="text-[10px] text-terminal-muted uppercase tracking-wider mb-2 font-bold">Strategy Code</div>
+      <div className="max-h-48 overflow-y-auto border border-terminal-border">
+        <SyntaxHighlighter language="python" style={oneDark}
+          customStyle={{ fontSize: "10px", margin: 0, background: "#0a0a0a", padding: "10px", borderRadius: 0, lineHeight: "1.6", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
           {code}
         </SyntaxHighlighter>
       </div>

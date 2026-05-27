@@ -2,7 +2,161 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: #0d1117;
-  color: #e6edf3;
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d4a017 transparent;
+  font-family: 'JetBrains Mono', monospace;
 }
+
+body {
+  background: #0a0a0a;
+  color: #c8c8c8;
+  -webkit-font-smoothing: antialiased;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Terminal-style panels — flat, sharp, no glass */
+.terminal-panel {
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+}
+
+.terminal-panel-active {
+  background: #0f0f0f;
+  border: 1px solid #d4a017;
+}
+
+/* Amber accent for key data */
+.text-amber { color: #d4a017; }
+.border-amber { border-color: #d4a017; }
+.bg-amber-soft { background: rgba(212, 160, 23, 0.08); }
+
+/* Green/red for P&L */
+.text-pnl-green { color: #00a854; }
+.text-pnl-red { color: #e05555; }
+
+/* Headers — Bloomberg style */
+.terminal-header {
+  background: #1a1a1a;
+  border-bottom: 2px solid #d4a017;
+  color: #d4a017;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+  padding: 6px 12px;
+}
+
+/* Data table */
+.terminal-table {
+  font-size: 11px;
+  border-collapse: collapse;
+  width: 100%;
+}
+.terminal-table th {
+  background: #141414;
+  color: #888;
+  font-weight: 500;
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 2px solid #2a2a2a;
+}
+.terminal-table td {
+  padding: 3px 8px;
+  border-bottom: 1px solid #1a1a1a;
+  color: #c8c8c8;
+}
+
+/* Buttons */
+.terminal-btn {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #d4a017;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.terminal-btn:hover {
+  background: #222;
+  border-color: #d4a017;
+}
+.terminal-btn-primary {
+  background: #d4a017;
+  color: #0a0a0a;
+  border: 1px solid #d4a017;
+  font-weight: 700;
+}
+.terminal-btn-primary:hover {
+  background: #e0b030;
+}
+
+/* Input — command-line style */
+.terminal-input {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  color: #c8c8c8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 6px 12px;
+  caret-color: #d4a017;
+}
+.terminal-input:focus {
+  border-color: #d4a017;
+  outline: none;
+}
+.terminal-input::placeholder {
+  color: #444;
+}
+
+/* Progress bar */
+.terminal-progress {
+  background: #1a1a1a;
+  height: 2px;
+}
+.terminal-progress-fill {
+  background: #d4a017;
+  height: 2px;
+  transition: width 0.3s;
+}
+
+/* Code block */
+.terminal-code {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  color: #999;
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 8px 12px;
+}
+
+/* Chart area */
+.terminal-chart {
+  background: #0a0a0a;
+  border: 1px solid #222;
+}
+
+/* Status bar at bottom */
+.terminal-status {
+  background: #1a1a1a;
+  border-top: 1px solid #333;
+  color: #888;
+  font-size: 10px;
+  padding: 2px 12px;
+}
+
+/* Markdown in analysis */
+.prose-terminal h2 { color: #d4a017; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1em; }
+.prose-terminal h3 { color: #ccc; font-weight: 700; font-size: 0.75rem; margin-top: 0.8em; }
+.prose-terminal strong { color: #fff; }
+.prose-terminal code { color: #d4a017; background: #141414; padding: 1px 4px; }
+.prose-terminal li { color: #999; font-size: 0.7rem; }
+.prose-terminal p { color: #b0b0b0; font-size: 0.7rem; }
+.prose-terminal table { font-size: 0.65rem; border-color: #222; }
+.prose-terminal th { color: #777; }
+.prose-terminal td { color: #999; }

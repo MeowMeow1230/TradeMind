@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AI Trading Partner",
-  description: "Build, backtest, and optimize trading strategies with AI"
+  title: "TradeMind",
+  description: "AI-powered trading strategy engine — generate, backtest, analyze, deploy on Mantle",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen font-sans">{children}</body>
     </html>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function ChatInput({ onSend, disabled }: { onSend: (msg: string) => void; disabled: boolean }) {
+export default function ChatInput({ onSend, disabled }: { onSend: (msg: string, settings?: { capital: number; riskPct: number; symbols?: string[]; sizingConfirmed?: boolean }) => void; disabled: boolean }) {
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -13,22 +13,25 @@ export default function ChatInput({ onSend, disabled }: { onSend: (msg: string) 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t border-agent-border">
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Describe your trading strategy... (e.g. Buy BTC when RSI < 30 and close above 20 SMA)"
-        className="flex-1 bg-agent-bg border border-agent-border rounded px-4 py-2 text-sm focus:outline-none focus:border-agent-accent"
-        disabled={disabled}
-      />
-      <button
-        type="submit"
-        disabled={disabled || !input.trim()}
-        className="bg-agent-accent text-black px-6 py-2 rounded font-medium text-sm disabled:opacity-50"
-      >
-        Send
-      </button>
+    <form onSubmit={handleSubmit} className="shrink-0 pt-2">
+      <div className="terminal-panel flex items-center gap-0 p-0">
+        <span className="text-amber px-3 shrink-0 text-xs font-bold select-none">{">"}</span>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter strategy description..."
+          className="flex-1 bg-transparent border-0 px-0 py-2.5 text-xs text-terminal-bright placeholder:text-terminal-muted focus:outline-none font-mono"
+          disabled={disabled}
+        />
+        <button
+          type="submit"
+          disabled={disabled || !input.trim()}
+          className="terminal-btn-primary px-6 py-2.5 text-xs font-bold disabled:opacity-30 shrink-0"
+        >
+          EXECUTE
+        </button>
+      </div>
     </form>
   );
 }

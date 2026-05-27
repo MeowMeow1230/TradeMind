@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { AgentStep } from "@/lib/api";
 
@@ -9,53 +8,29 @@ export default function ExportPanel({ code, metrics }: { code: string; metrics: 
 
   const handleDownload = () => {
     const blob = new Blob([code], { type: "text/x-python" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "trading_strategy.py";
-    a.click();
-    URL.revokeObjectURL(url);
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "strategy.py"; a.click(); URL.revokeObjectURL(a.href);
   };
 
   const handleDeploy = async () => {
     setDeploying(true);
     try {
-      const res = await fetch("/api/deploy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, metrics }),
-      });
+      const res = await fetch("http://localhost:8001/deploy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, metrics }) });
       const data = await res.json();
       if (data.tx_hash) setTxHash(data.tx_hash);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
     setDeploying(false);
   };
 
   return (
-    <div className="mt-4">
-      <button
-        onClick={handleDownload}
-        className="w-full bg-agent-accent text-black py-2 rounded font-medium text-sm hover:opacity-90"
-      >
-        Download Strategy (.py)
+    <div className="space-y-1.5">
+      <button onClick={handleDownload} className="w-full terminal-btn-primary py-2 text-[10px] font-bold uppercase tracking-wider">
+        Download .PY
       </button>
-      <button
-        onClick={handleDeploy}
-        disabled={deploying}
-        className="w-full bg-agent-warn text-black py-2 rounded font-medium text-sm mt-2 hover:opacity-90 disabled:opacity-50"
-      >
-        {deploying ? "Deploying..." : txHash ? "Deployed ✓" : "Deploy to Mantle"}
+      <button onClick={handleDeploy} disabled={deploying} className="w-full terminal-btn py-2 text-[10px] font-bold uppercase tracking-wider disabled:opacity-30">
+        {deploying ? "DEPLOYING..." : txHash ? "DEPLOYED" : "Deploy to Mantle"}
       </button>
-      {txHash && (
-        <p className="text-xs text-agent-accent mt-1 text-center truncate">
-          TX: {txHash.slice(0, 10)}...
-        </p>
-      )}
-      <p className="text-xs text-gray-500 mt-2 text-center">
-        {metrics ? `Sharpe ${metrics.sharpe_ratio} · Return ${metrics.total_return_pct}%` : ""}
-      </p>
+      {txHash && <div className="text-[9px] text-pnl-green truncate text-center">TX: {txHash.slice(0, 14)}...</div>}
     </div>
   );
 }
