@@ -29,8 +29,17 @@ User Chat → Next.js Frontend → FastAPI SSE → Claude API Agent
 |-------|-----------|
 | Frontend | Next.js 14, Tailwind CSS, Plotly.js |
 | Backend | Python FastAPI, pandas, ccxt |
-| AI Agent | Claude API (Opus 4.7) |
+| AI Agent | DeepSeek API (deepseek-chat) |
 | Blockchain | Solidity, ERC-8004, Mantle Sepolia Testnet |
+
+## Mantle Deployment
+
+| Detail | Value |
+|--------|-------|
+| Contract Address | `0x124850dA551dC83b124A9A3F84f8D6674C870Ba1` |
+| Network | Mantle Sepolia Testnet (Chain ID: 5003) |
+| Explorer | [Mantle Sepolia Explorer](https://explorer.sepolia.mantle.xyz) |
+| Latest TX | `0xd0b5a15d0a07cd9965eae44823669fbbeb4bdfd9d54eaa759b150e7bc1f5cdac` |
 | Data | Bybit API (real-time crypto OHLCV) |
 
 ## Quick Start
