@@ -2,7 +2,7 @@
 
 **Talk to your AI trading partner. It builds, tests, and optimizes crypto trading strategies while you watch.**
 
-[![Demo Video](https://img.shields.io/badge/Demo-Video-green)](https://youtu.be/2n_O1fFHQac)
+[![Demo Video](https://img.shields.io/badge/Demo-Video-green)](https://youtu.be/s6gkwNHvHD8)
 
 ## What It Does
 
