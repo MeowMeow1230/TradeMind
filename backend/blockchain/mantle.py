@@ -33,7 +33,7 @@ def deploy_contract(private_key: str) -> str:
     })
 
     signed = account.sign_transaction(tx)
-    tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+    tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
     return receipt.contractAddress
 
@@ -44,10 +44,26 @@ def log_strategy_to_chain(
     code: str,
     sharpe_ratio: float,
 ) -> str:
-    """Hash strategy code and log to Mantle. Returns transaction hash."""
+    """Hash strategy code and log to Mantle. Mints Agent NFT first if needed."""
     w3 = Web3(Web3.HTTPProvider(MANTLE_TESTNET_RPC))
     account = w3.eth.account.from_key(private_key)
     contract = _get_contract(w3, contract_address)
+
+    # Check if user already has an agent, mint if not
+    try:
+        agent_id = contract.functions.agentOf(account.address).call()
+    except Exception:
+        agent_id = 0
+
+    if agent_id == 0:
+        tx = contract.functions.mintAgent("TradeMind Agent").build_transaction({
+            "from": account.address,
+            "nonce": w3.eth.get_transaction_count(account.address, "pending"),
+            "chainId": CHAIN_ID,
+        })
+        signed = account.sign_transaction(tx)
+        tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
+        w3.eth.wait_for_transaction_receipt(tx_hash)
 
     strategy_hash = "0x" + hashlib.sha256(code.encode()).hexdigest()
     performance = int(sharpe_ratio * 1_000_000)
@@ -57,11 +73,11 @@ def log_strategy_to_chain(
         performance
     ).build_transaction({
         "from": account.address,
-        "nonce": w3.eth.get_transaction_count(account.address),
+        "nonce": w3.eth.get_transaction_count(account.address, "pending"),
         "chainId": CHAIN_ID,
     })
 
     signed = account.sign_transaction(tx)
-    tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+    tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
     return receipt.transactionHash.hex()
