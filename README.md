@@ -2,7 +2,7 @@
 
 **Talk to your AI trading partner. It builds, tests, and optimizes crypto trading strategies while you watch.**
 
-[![Demo Video](https://img.shields.io/badge/Demo-Video-green)](https://youtu.be/placeholder)
+[![Demo Video](https://img.shields.io/badge/Demo-Video-green)](https://youtu.be/2n_O1fFHQac)
 
 ## What It Does
 
@@ -16,7 +16,7 @@
 ## Architecture
 
 ```
-User Chat → Next.js Frontend → FastAPI SSE → Claude API Agent
+User Chat → Next.js Frontend → FastAPI SSE → DeepSeek API Agent
                                                     ↓
                                             Parse → Generate → Backtest → Analyze
                                                     ↓
@@ -46,7 +46,7 @@ User Chat → Next.js Frontend → FastAPI SSE → Claude API Agent
 
 ### Prerequisites
 - Node.js 18+, Python 3.11+
-- Anthropic API key ([console.anthropic.com](https://console.anthropic.com))
+- DeepSeek API key ([platform.deepseek.com](https://platform.deepseek.com))
 
 ### Install & Run
 
@@ -61,7 +61,7 @@ cd frontend && npm install && npm run dev
 # Backend (separate terminal)
 cd backend
 pip install -r requirements.txt
-cp .env.example .env  # add your ANTHROPIC_API_KEY
+cp .env.example .env  # add your DEEPSEEK_API_KEY
 uvicorn main:app --reload
 # → http://localhost:8000
 ```
@@ -78,7 +78,7 @@ PRIVATE_KEY=<your-key> npx hardhat run scripts/deploy.js --network mantleTestnet
 
 ```bash
 cd backend
-ANTHROPIC_API_KEY=<your-key> python test_agent.py
+DEEPSEEK_API_KEY=<your-key> python test_agent.py
 ```
 
 ## Demo Script
